@@ -85,10 +85,6 @@ function parseIp(raw: string | undefined): string | null {
 // ─── DB write ─────────────────────────────────────────────────────────────────
 
 async function writeAuditRow(env: Env, payload: AuditPayload): Promise<void> {
-  const beforeStr = payload.before_state ? JSON.stringify(payload.before_state) : null
-  const afterStr  = payload.after_state  ? JSON.stringify(payload.after_state)  : null
-  const metaStr   = JSON.stringify(payload.metadata ?? {})
-
   const db = getCockroachClient(env)
   try {
     await db`
@@ -106,9 +102,9 @@ async function writeAuditRow(env: Env, payload: AuditPayload): Promise<void> {
         ${payload.entity},
         ${payload.entity_id        ?? null},
         ${payload.patient_id       ?? null},
-        ${beforeStr}::JSONB,
-        ${afterStr}::JSONB,
-        ${metaStr}::JSONB
+        ${payload.before_state     ?? null}::JSONB,
+        ${payload.after_state      ?? null}::JSONB,
+        ${payload.metadata ?? {}}::JSONB
       )
     `
   } catch (e) {
