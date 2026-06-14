@@ -1,0 +1,4 @@
+node_modules
+
+# Local secrets — never commit
+api/.dev.vars
